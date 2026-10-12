@@ -6,7 +6,7 @@ from agent import extract
 
 st.set_page_config(page_title="Structured Output Agent", page_icon="🧾")
 st.title("Structured Output Agent")
-st.caption("Unstructured text theke validated JSON ber kore.")
+st.caption("Turns unstructured text into validated JSON.")
 
 SAMPLE = (
     "Hi, I'm Rahul Das. I'm 21 years old.\n"
@@ -14,7 +14,7 @@ SAMPLE = (
     "My email is rahul@example.com."
 )
 
-text = st.text_area("Text paste kor", value=SAMPLE, height=180)
+text = st.text_area("Paste your text", value=SAMPLE, height=180)
 
 if st.button("Extract Information", type="primary"):
     with st.spinner("Extracting..."):
