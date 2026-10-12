@@ -1,8 +1,15 @@
+import os
 from dataclasses import dataclass, field
+
+from dotenv import load_dotenv
+from groq import Groq
 
 from validator import parse_and_validate
 
+load_dotenv()
+
 MAX_ATTEMPTS = 3
+MODEL = os.getenv("LLM_MODEL", "openai/gpt-oss-120b")
 
 SYSTEM_PROMPT = """You extract structured data from text.
 Return ONLY a JSON object with exactly these keys:
@@ -14,6 +21,7 @@ Return ONLY a JSON object with exactly these keys:
 Rules:
 - Use only information stated in the text. Never invent or guess details.
 - If a value is missing, use null (or [] for skills).
+- Normalize skill capitalization (e.g. "machine learning" -> "Machine Learning").
 - No extra keys, no commentary, no markdown fences."""
 
 
@@ -26,8 +34,13 @@ class ExtractionResult:
 
 
 def call_llm(messages: list[dict]) -> str:
-    """Real LLM ekhane boshabo (provider decide hole). Ekhon placeholder."""
-    raise NotImplementedError("LLM provider ekhono connect kora hoy nai")
+    client = Groq()  # GROQ_API_KEY .env theke nibe
+    resp = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+        temperature=0,
+    )
+    return resp.choices[0].message.content
 
 
 def extract(text: str, llm=call_llm, max_attempts: int = MAX_ATTEMPTS) -> ExtractionResult:
